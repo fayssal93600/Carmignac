@@ -1,0 +1,127 @@
+{
+	"name": "FIPA_business_master",
+	"properties": {
+		"activities": [
+			{
+				"name": "launch only not temporary file",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@not(contains(pipeline().parameters.fileNamePathwtoraw,'part'))",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Execute Instrument bussiness",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "FIPA_instrument_business",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"fileNamePathwtoraw": {
+										"value": "@pipeline().parameters.fileNamePathwtoraw",
+										"type": "Expression"
+									},
+									"UserNotebookPath": {
+										"value": "@pipeline().parameters.UserNotebookPath",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Execute contributions bussiness",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Execute Instrument bussiness",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "FIPA_contributions_business",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"fileNamePathwtoraw": {
+										"value": "@pipeline().parameters.fileNamePathwtoraw",
+										"type": "Expression"
+									},
+									"UserNotebookPath": {
+										"value": "@pipeline().parameters.UserNotebookPath",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Execute contributions render",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Execute contributions bussiness",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "FIPA_contributions_render",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"fileNamePathwtoraw": {
+										"value": "@pipeline().parameters.fileNamePathwtoraw",
+										"type": "Expression"
+									},
+									"UserNotebookPath": {
+										"value": "@pipeline().parameters.UserNotebookPath",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"concurrency": 10,
+		"parameters": {
+			"fileNamePathwtoraw": {
+				"type": "string"
+			},
+			"UserNotebookPath": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"sourceName": {
+				"type": "String",
+				"defaultValue": "ubsdelta"
+			},
+			"dataSet": {
+				"type": "String",
+				"defaultValue": "contributions"
+			}
+		},
+		"folder": {
+			"name": "FIPA_process"
+		},
+		"annotations": []
+	}
+}

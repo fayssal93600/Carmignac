@@ -1,0 +1,160 @@
+{
+	"name": "OLYMPIA_INTEGRATE_DATA_MASTER",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach Table",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('tablelist')",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 10,
+					"activities": [
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(length(split(item(), '|')), 3)",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Execute TABLE_TO_ADLS",
+										"type": "ExecutePipeline",
+										"dependsOn": [
+											{
+												"activity": "Set sechemaName",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"userProperties": [],
+										"typeProperties": {
+											"pipeline": {
+												"referenceName": "OLYMPIA_TABLE_TO_ADLS",
+												"type": "PipelineReference"
+											},
+											"waitOnCompletion": true,
+											"parameters": {
+												"tableName": {
+													"value": "@variables('tableName')",
+													"type": "Expression"
+												},
+												"schemaName": {
+													"value": "@variables('schemaName')",
+													"type": "Expression"
+												},
+												"sourceName": {
+													"value": "@variables('sourceName')",
+													"type": "Expression"
+												}
+											}
+										}
+									},
+									{
+										"name": "Set tableName",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "tableName",
+											"value": {
+												"value": "@split(item(),'|')[1]",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "Set sechemaName",
+										"type": "SetVariable",
+										"dependsOn": [
+											{
+												"activity": "Set tableName",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "schemaName",
+											"value": {
+												"value": "@split(item(),'|')[0]",
+												"type": "Expression"
+											}
+										}
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "QUERY OLYMPIA TO RAW AND STAGING",
+										"type": "ExecutePipeline",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"pipeline": {
+												"referenceName": "OLYMPIA_QUERY_TO_ADLS",
+												"type": "PipelineReference"
+											},
+											"waitOnCompletion": true,
+											"parameters": {
+												"query": {
+													"value": "@split(item(),'|')[2]",
+													"type": "Expression"
+												},
+												"tableName": {
+													"value": "@split(item(),'|')[1]",
+													"type": "Expression"
+												},
+												"schemaName": {
+													"value": "@split(item(),'|')[0]",
+													"type": "Expression"
+												},
+												"sourceName": "olympia"
+											}
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"sourceName": {
+				"type": "String",
+				"defaultValue": "olympia"
+			},
+			"tablelist": {
+				"type": "Array",
+				"defaultValue": [
+					"usr|V_DS_Holdings_Generic_ELY|select * from [usr].[V_DS_Holdings_Generic_ely] where NavDate>getdate()-8",
+					"usr|F_DS_ShareClassInTime|select * from [usr].[F_DS_ShareClassInTime](NULL,'','SHARECLASS')"
+				]
+			},
+			"tableName": {
+				"type": "String"
+			},
+			"schemaName": {
+				"type": "String"
+			},
+			"fileName": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "OLYMPIA"
+		},
+		"annotations": []
+	}
+}

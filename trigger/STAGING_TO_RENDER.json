@@ -1,0 +1,40 @@
+{
+	"name": "STAGING_TO_RENDER",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "STAGING_TO_RENDER",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"tableList": [
+						"TD_Calendar|Calendar|vendome_staging|ds|true|true",
+						"v_ds_generic_benchmark_constituency_vom|BenchmarkMember|vendome_staging|ds|data.NavDate > current_date()-8|\"NavDate\"> CURRENT_DATE-8",
+						"v_ds_holdings_generic_ELY|Holding|olympia_staging|ds|data.NavDate > current_date()-8|NavDate> CURRENT_DATE-8",
+						"f_ds_shareclassintime|ShareClassInTime|olympia_staging|ds|true|true"
+					]
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2022-10-17T04:00:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						0
+					],
+					"hours": [
+						4
+					]
+				}
+			}
+		}
+	}
+}

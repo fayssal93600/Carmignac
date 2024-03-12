@@ -1,0 +1,57 @@
+{
+	"name": "FACTSET_FDS_INTEGRATE_DATA_MASTER",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach table",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.tablelist",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "FDS_FACTSET TABLE",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "FACTSET_FDS_GENERIC_TABLE_TO_ADLS",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"schemaName": "@split(item(),'|')[0]",
+									"tableName": "@split(item(),'|')[1]"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"tablelist": {
+				"type": "array",
+				"defaultValue": [
+					"sym_v1|sym_isin",
+					"sym_v1|sym_sec_entity",
+					"sym_v1|sym_coverage",
+					"ent_v1|ent_entity_coverage",
+					"ent_v1|ent_entity_structure"
+				]
+			}
+		},
+		"folder": {
+			"name": "FACTSET_FDS"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-05-05T08:03:09Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

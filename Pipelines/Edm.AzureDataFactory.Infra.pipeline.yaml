@@ -1,0 +1,76 @@
+trigger:
+  branches:
+    include:
+      - develop
+      - release/*
+      - master
+  paths:
+    include:
+      - Terraforms/1_Creation/*
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  backendServiceArm: 'CGP-DEV-SC-DCTESG3'
+  backendAzureRmResourceGroupName: 'CGP-DEV-RG-INF01'
+  backendAzureRmStorageAccountName: 'cgpdevstoragetfstate'
+  backendAzureRmContainerName: 'edm'
+  backendAzureRmKey: 'tf/terraform.azuredatafactory.creation.tfstate'
+  workingDirectory: '$(Build.SourcesDirectory)/Terraforms/1_Creation'
+  version: '1.0.7'
+
+jobs:
+  - job : 'validate_and_package_terraform_scripts'
+    displayName: 'validate and package terraform scripts'
+    continueOnError: 'false'
+
+    steps:
+      - task: TerraformInstaller@0
+        displayName: 'Installing Terraform $(version)'
+        inputs:
+          terraformVersion: $(version)
+
+      - task: TerraformTaskV2@2
+        displayName: 'Terraform init'
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: $(workingDirectory)
+          backendServiceArm: $(backendServiceArm)
+          backendAzureRmResourceGroupName: $(backendAzureRmResourceGroupName)
+          backendAzureRmStorageAccountName: $(backendAzureRmStorageAccountName)
+          backendAzureRmContainerName: $(backendAzureRmContainerName)
+          backendAzureRmKey: $(backendAzureRmKey)
+
+      - task: TerraformTaskV1@0
+        displayName: 'Terraform Validate'
+        inputs:
+          provider: 'azurerm'
+          command: 'validate'
+          workingDirectory: $(workingDirectory)
+          backendServiceArm: $(backendServiceArm)
+          backendAzureRmResourceGroupName: $(backendAzureRmResourceGroupName)
+          backendAzureRmStorageAccountName: $(backendAzureRmStorageAccountName)
+          backendAzureRmContainerName: $(backendAzureRmContainerName)
+          backendAzureRmKey: $(backendAzureRmKey)
+
+      - task: CopyFiles@2
+        displayName: 'Copying terraform scripts files to $(Build.ArtifactStagingDirectory)/Creation'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/Terraforms/1_Creation'
+          Contents: |
+            **/*.tf
+            **/*.tfvars
+            **/*.ps1
+            **/*.json
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/Creation'
+          CleanTargetFolder: true
+          OverWrite: true
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Build Artifact for terraform scripts'
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)/Creation'
+          ArtifactName: 'drop.Creation'
+          publishLocation: 'Container'

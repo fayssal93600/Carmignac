@@ -1,0 +1,28 @@
+{
+	"name": "FIPA_STAGING_TO_BUSINESS_CONTRIBUTIONS",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "FIPA_business_master",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"fileNamePathwtoraw": "@replace(concat(triggerBody().folderPath,'/',triggerBody().fileName),'staging/ubsdelta/contributions/','')"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/staging/blobs/ubsdelta/contributions/",
+			"blobPathEndsWith": ".json",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/87b720b3-fcb9-4bd5-8047-816efd16c823/resourceGroups/CGP-DEV-RG-EDM/providers/Microsoft.Storage/storageAccounts/cgpdevsaedm01",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

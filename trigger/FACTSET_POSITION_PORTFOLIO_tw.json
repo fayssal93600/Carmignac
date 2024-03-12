@@ -1,0 +1,32 @@
+{
+	"name": "FACTSET_POSITION_PORTFOLIO_tw",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipeline": {
+			"pipelineReference": {
+				"referenceName": "POSTITIONS_RF",
+				"type": "PipelineReference"
+			},
+			"parameters": {
+				"filename": "f_ds_holdings_stack_fr",
+				"filenameDatePattern": "yyyyMMdd_HHmmss",
+				"datasource": "olympia",
+				"dataset": "f_ds_holdings_stack_fr"
+			}
+		},
+		"type": "TumblingWindowTrigger",
+		"typeProperties": {
+			"frequency": "Month",
+			"interval": 1,
+			"startTime": "2023-07-02T05:07:00Z",
+			"delay": "00:00:00",
+			"maxConcurrency": 1,
+			"retryPolicy": {
+				"count": 20,
+				"intervalInSeconds": 86400
+			},
+			"dependsOn": []
+		}
+	}
+}

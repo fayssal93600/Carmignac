@@ -1,0 +1,41 @@
+{
+	"name": "VENDOME_INTEGRATE_DATA",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "VENDOME_INTEGRATE_DATA_MASTER",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"tablelist": [
+						"p_data|TD_Calendar",
+						"p_data|IN_Poms_Position|SELECT * FROM [p_data].[IN_Poms_Position] WHERE Dat = CAST(getdate()-1 AS date)",
+						"p_data|IN_Poms_Position2|SELECT * FROM [p_data].[IN_Poms_Position2] WHERE Dat = CAST(getdate()-1 AS date)",
+						"p_data|IN_Msci_GicsCompany|SELECT * FROM [p_data].[IN_Msci_GicsCompany] WHERE Dat = CAST(getdate()-1 AS date)",
+						"p_data|IN_Msci_GicsSecurity|SELECT * FROM [p_data].[IN_Msci_GicsSecurity] WHERE Dat = CAST(getdate()-1 AS date)",
+						"p_data|V_DS_Generic_Benchmark_Constituency_VOM|SELECT ptf.Cod,bench.Dat AS NavDate,bench.WgtCgAcc indexWeight,idx.IndIdt,   CASE WHEN sec.Isin IS NOT NULL AND sec.Isin <> '' THEN sec.Isin  WHEN index_memb.SecIdt IS NOT NULL AND index_memb.SecIdt <> '' THEN index_memb.SecIdt  ELSE CAST(bench.IndId AS VARCHAR) END Isin  ,sum(COALESCE(index_memb.Wgt,1)) secWeightWithinIndex,sum(COALESCE(index_memb.Wgt,100)*bench.WgtCgAcc/10000) AS secWeightWithinBench,sec.TypSecLib AS assetClassLevel2,sec.DesCt AS securityName,sec.ClassSecLib AS assetClassLevel1, sec.SecId, bench.IndId FROM [p_data].[TD_Portefeuille] ptf INNER JOIN [p_data].[TR_Benchmark] bench ON bench.PtfId=ptf.PtfId INNER JOIN TD_Index idx ON bench.IndId = idx.IndId LEFT JOIN TF_IndexMemb index_memb ON index_memb.IndId=bench.IndId AND index_memb.Dat=bench.Dat LEFT JOIN V_TrSecurity_MaxDat sec ON sec.SecId=index_memb.SecId WHERE bench.Dat>getdate()-365 GROUP BY ptf.Cod,bench.Dat,bench.WgtCgAcc,idx.IndIdt,  CASE WHEN sec.Isin IS NOT NULL AND sec.Isin <> '' THEN sec.Isin  WHEN index_memb.SecIdt IS NOT NULL AND index_memb.SecIdt <> '' THEN index_memb.SecIdt  ELSE CAST(bench.IndId AS VARCHAR) END,sec.TypSecLib,sec.DesCt,sec.ClassSecLib, sec.SecId, bench.IndId",
+						"p_data|TDTF_CURRENCY|SELECT td.CurIdt,td.DevPrinc,td.Devsecond,Dat,tf.Cours,tf.CtbId FROM p_data.TD_Currency td left outer join p_data.TF_Currency tf on td.CurId = tf.CurId"
+					]
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "WENDY_REPORT_VENDOME_INTEGRATION",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2022-04-15T02:00:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

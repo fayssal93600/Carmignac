@@ -1,0 +1,107 @@
+{
+	"name": "PRODUCT_FEE_TERMS_CATALOGUE_ENTITY",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute RAW_TO_DELTA",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "RAW_TO_DELTA",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"filePath": {
+							"value": "@pipeline().parameters.csvFilePath",
+							"type": "Expression"
+						},
+						"dataSource": {
+							"value": "@pipeline().parameters.sourceName",
+							"type": "Expression"
+						},
+						"dataSet": {
+							"value": "@pipeline().parameters.dataset",
+							"type": "Expression"
+						},
+						"guid": {
+							"value": "@pipeline().parameters.guid",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Fee_Terms_Catalogue_Entity",
+				"type": "DatabricksSparkJar",
+				"dependsOn": [
+					{
+						"activity": "Execute RAW_TO_DELTA",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"mainClassName": "com.carmignac.icare.elysee.project.business.product.ProductFeeTermsEntity",
+					"parameters": [
+						"@pipeline().parameters.csvFilePath",
+						"@pipeline().parameters.sourceName",
+						"@pipeline().parameters.dataset",
+						"@pipeline().parameters.guid",
+						"@pipeline().parameters.startDate",
+						"@pipeline().parameters.endDate"
+					],
+					"libraries": [
+						{
+							"jar": "dbfs:/databricks/job-jars/IcareDataLib.jar"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_DTBK_1_NODE_12_2_RUNTIME",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"csvFilePath": {
+				"type": "string"
+			},
+			"dataset": {
+				"type": "string"
+			},
+			"guid": {
+				"type": "string"
+			},
+			"sourceName": {
+				"type": "string"
+			},
+			"startDate": {
+				"type": "string"
+			},
+			"endDate": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"varTest": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "PRODUCT"
+		},
+		"annotations": []
+	}
+}

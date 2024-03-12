@@ -1,0 +1,31 @@
+{
+	"name": "FIPA_Restocking_business",
+	"properties": {
+		"activities": [
+			{
+				"name": "Restocking business",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 10,
+					"retryIntervalInSeconds": 1800,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Notebooks/03-BUSINESS/FIPA_RESTOCK_MASTER_FULL"
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_DTBK_EDM_01",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "FIPA_process/Restocking"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,84 @@
+{
+	"name": "OLYMPIA_F_DS_Holdings_ESG_Raw_To_Render",
+	"properties": {
+		"activities": [
+			{
+				"name": "Raw_To_Render",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Notebooks/01-RAW/RAW_TO_RENDER",
+					"baseParameters": {
+						"DataSet": {
+							"value": "@variables('DataSet')",
+							"type": "Expression"
+						},
+						"Encoding": {
+							"value": "@variables('Encoding')",
+							"type": "Expression"
+						},
+						"Delimiter": {
+							"value": "@variables('Delimiter')",
+							"type": "Expression"
+						},
+						"HasHeader": {
+							"value": "@variables('HasHeader')",
+							"type": "Expression"
+						},
+						"Format": {
+							"value": "@variables('Format')",
+							"type": "Expression"
+						},
+						"FilePath": {
+							"value": "@pipeline().parameters.FilePath",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_DTBK_EDM_01",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"FilePath": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"DataSet": {
+				"type": "String",
+				"defaultValue": "f_ds_holdings_esg"
+			},
+			"Encoding": {
+				"type": "String",
+				"defaultValue": "UTF-8"
+			},
+			"Delimiter": {
+				"type": "String",
+				"defaultValue": "|"
+			},
+			"HasHeader": {
+				"type": "String",
+				"defaultValue": "true"
+			},
+			"Format": {
+				"type": "String",
+				"defaultValue": "csv"
+			}
+		},
+		"folder": {
+			"name": "OLYMPIA/F_DS_HOLDING_ESG"
+		},
+		"annotations": []
+	}
+}

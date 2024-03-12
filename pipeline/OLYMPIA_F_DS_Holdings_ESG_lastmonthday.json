@@ -1,0 +1,52 @@
+{
+	"name": "OLYMPIA_F_DS_Holdings_ESG_lastmonthday",
+	"properties": {
+		"activities": [
+			{
+				"name": "F_DS_HOLDING_ESG lastmonthday",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "OLYMPIA_F_DS_Holdings_ESG_bydate",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"date": {
+							"value": "@formatDateTime(adddays(startOfMonth(utcnow()),-1),'yyyyMMdd')",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"variables": {
+			"tableName": {
+				"type": "String",
+				"defaultValue": "F_DS_Holdings_ESG"
+			},
+			"schemaName": {
+				"type": "String",
+				"defaultValue": "usr"
+			},
+			"sourceName": {
+				"type": "String",
+				"defaultValue": "olympia"
+			},
+			"querybeginning": {
+				"type": "String",
+				"defaultValue": "select * from [usr].[F_DS_Holdings_ESG] ("
+			},
+			"queryending": {
+				"type": "String",
+				"defaultValue": ")"
+			}
+		},
+		"folder": {
+			"name": "OLYMPIA/F_DS_HOLDING_ESG"
+		},
+		"annotations": []
+	}
+}

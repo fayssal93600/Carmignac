@@ -1,0 +1,40 @@
+{
+	"name": "ISIN_SCOPE_PUSH_ISSUER",
+	"properties": {
+		"description": "trigger for feeding isin scope for asset sagacity",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "ISIN_SCOPE_PUSH_ISSUER",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"dataSet": "issuer_scope",
+					"dataSource": "assetsagacity"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Week",
+				"interval": 1,
+				"startTime": "2023-08-03T05:08:00",
+				"timeZone": "Romance Standard Time",
+				"schedule": {
+					"minutes": [
+						5
+					],
+					"hours": [
+						5
+					],
+					"weekDays": [
+						"Friday"
+					]
+				}
+			}
+		}
+	}
+}

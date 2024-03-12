@@ -1,0 +1,28 @@
+{
+	"name": "MORNINGSTAR_RAW_TO_STAGING",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "BI_RAW_TO_STAGING",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"filePath": "@concat('/mnt/', triggerBody().folderPath,'/',triggerBody().fileName)"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/raw/blobs/morningstar/wendy/in/",
+			"blobPathEndsWith": ".xlsx",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/87b720b3-fcb9-4bd5-8047-816efd16c823/resourceGroups/CGP-DEV-RG-EDM/providers/Microsoft.Storage/storageAccounts/cgpdevsaedm01",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

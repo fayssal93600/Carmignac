@@ -1,0 +1,69 @@
+{
+	"name": "OLYMPIA_F_DS_Holdings_ESG_bydate",
+	"properties": {
+		"activities": [
+			{
+				"name": "QUERY TABLE TO ADLS F_DS_HOLDING_ESG",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "OLYMPIA_QUERY_TO_ADLS",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"query": {
+							"value": "@concat(variables('querybeginning'),pipeline().parameters.date,variables('queryending'))",
+							"type": "Expression"
+						},
+						"tableName": {
+							"value": "@variables('tableName')",
+							"type": "Expression"
+						},
+						"schemaName": {
+							"value": "@variables('schemaName')",
+							"type": "Expression"
+						},
+						"sourceName": {
+							"value": "@variables('sourceName')",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"date": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"tableName": {
+				"type": "String",
+				"defaultValue": "F_DS_Holdings_ESG"
+			},
+			"schemaName": {
+				"type": "String",
+				"defaultValue": "usr"
+			},
+			"sourceName": {
+				"type": "String",
+				"defaultValue": "olympia"
+			},
+			"querybeginning": {
+				"type": "String",
+				"defaultValue": "select * from [usr].[F_DS_Holdings_ESG] ("
+			},
+			"queryending": {
+				"type": "String",
+				"defaultValue": ")"
+			}
+		},
+		"folder": {
+			"name": "OLYMPIA/F_DS_HOLDING_ESG"
+		},
+		"annotations": []
+	}
+}

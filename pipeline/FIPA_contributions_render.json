@@ -1,0 +1,62 @@
+{
+	"name": "FIPA_contributions_render",
+	"properties": {
+		"activities": [
+			{
+				"name": "FIPA_contributions_render",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:25:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 15,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat(pipeline().parameters.UserNotebookPath,'/Notebooks/05-RENDER/FIPA_CONTRIBUTION_RENDER')",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"FileName": {
+							"value": "@pipeline().parameters.fileNamePathwtoraw",
+							"type": "Expression"
+						},
+						"isTimeTrackingEnabled": {
+							"value": "@pipeline().parameters.isTimeTrackingEnabled",
+							"type": "Expression"
+						}
+					},
+					"libraries": [
+						{
+							"jar": "dbfs:/databricks/job-jars/IcareDataLib.jar"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_DTBK_EDM_01_FIPA",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"fileNamePathwtoraw": {
+				"type": "string"
+			},
+			"UserNotebookPath": {
+				"type": "string"
+			},
+			"isTimeTrackingEnabled": {
+				"type": "string",
+				"defaultValue": "false"
+			}
+		},
+		"folder": {
+			"name": "FIPA_process"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,163 @@
+{
+	"name": "FIPA_Restocking_from_synapse_directory",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get archive from synapse",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ADLS_archive_raw",
+						"type": "DatasetReference",
+						"parameters": {
+							"tableName": {
+								"value": "@concat(variables('tableName'),'/','raw')",
+								"type": "Expression"
+							},
+							"sourceName": {
+								"value": "@variables('sourceName')",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"itemName",
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach directory",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get archive from synapse",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get archive from synapse').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Call restocking file",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Get list file",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "FIPA_Restocking_from_synapse_file",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": false,
+								"parameters": {
+									"directoryPath": {
+										"value": "@activity('Get list file').output.childItems",
+										"type": "Expression"
+									},
+									"sourceName": {
+										"value": "@variables('sourceName')",
+										"type": "Expression"
+									},
+									"folderName": {
+										"value": "@item().name",
+										"type": "Expression"
+									},
+									"tableName": {
+										"value": "@variables('tableName')",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Get list file",
+							"type": "GetMetadata",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "ADLS_archive_raw",
+									"type": "DatasetReference",
+									"parameters": {
+										"tableName": {
+											"value": "@concat(variables('tableName'),'/raw/',item().name)",
+											"type": "Expression"
+										},
+										"sourceName": {
+											"value": "@variables('sourceName')",
+											"type": "Expression"
+										}
+									}
+								},
+								"fieldList": [
+									"childItems",
+									"itemName"
+								],
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"tableName": {
+				"type": "String",
+				"defaultValue": "contributions"
+			},
+			"sourceName": {
+				"type": "String",
+				"defaultValue": "ubsdelta"
+			}
+		},
+		"folder": {
+			"name": "FIPA_process/Restocking"
+		},
+		"annotations": []
+	}
+}

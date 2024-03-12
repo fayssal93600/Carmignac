@@ -1,0 +1,116 @@
+{
+	"name": "PROVIDER_ISINS",
+	"properties": {
+		"description": "ingestion of asset sagacity provided data for a scope of isins",
+		"activities": [
+			{
+				"name": "Execute RAW_TO_DELTA",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "set_guid",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_filename",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "RAW_TO_DELTA",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"filePath": {
+							"value": "@variables('filePath')",
+							"type": "Expression"
+						},
+						"dataSource": {
+							"value": "@pipeline().parameters.sourceName",
+							"type": "Expression"
+						},
+						"dataSet": {
+							"value": "@pipeline().parameters.dataset",
+							"type": "Expression"
+						},
+						"datepattern": "yyyyMMdd",
+						"guid": {
+							"value": "@variables('guid')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "set_guid",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "guid",
+					"value": {
+						"value": "@if(empty(pipeline().parameters.guid), guid(), pipeline().parameters.guid)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_filename",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "filePath",
+					"value": {
+						"value": "@if(empty(pipeline().parameters.filePath), pipeline().parameters.filePath, concat('/mnt/',pipeline().parameters.filePath))",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"sourceName": {
+				"type": "string",
+				"defaultValue": "assetsagacity"
+			},
+			"dataset": {
+				"type": "string",
+				"defaultValue": "providerisins"
+			},
+			"guid": {
+				"type": "string"
+			},
+			"filePath": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"guid": {
+				"type": "String"
+			},
+			"filePath": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "ASSET_SAGACITY"
+		},
+		"annotations": []
+	}
+}

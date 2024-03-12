@@ -1,0 +1,84 @@
+{
+	"name": "VENDOME_DYNAMIC_QUERY_ISIN_PERIMETER",
+	"properties": {
+		"activities": [
+			{
+				"name": "VENDOME_QUERY_TABLE_TO_ADLS",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Set query",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "VENDOME_QUERY_TABLE_TO_ADLS",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"query": {
+							"value": "@variables('query')",
+							"type": "Expression"
+						},
+						"tableName": {
+							"value": "@pipeline().parameters.tableName",
+							"type": "Expression"
+						},
+						"schemaName": {
+							"value": "@pipeline().parameters.schemaName",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Set query",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "query",
+					"value": {
+						"value": "@concat('DECLARE @dat AS VARCHAR(10) SET @dat = ''',pipeline().parameters.date,'''; select distinct @dat as Dat,Isin from [p_data].[TR_Security] sec WHERE Dat > DATEADD(year,-1,@dat) AND Dat <= @dat AND ClassSecLib not in (''Future'', ''Option'', ''MutualFund'',  ''UnClassified'') AND TypSecLib not in (''Exchange Traded Fund Fixed Income'', ''Warrant'', ''Action Privee'') AND LEN(Isin) = 12')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tableName": {
+				"type": "string",
+				"defaultValue": "TR_Security_ISIN_perimeter"
+			},
+			"schemaName": {
+				"type": "string",
+				"defaultValue": "usr"
+			},
+			"date": {
+				"type": "string",
+				"defaultValue": "2023-07-03"
+			}
+		},
+		"variables": {
+			"query": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "VENDOME/CUSTOM"
+		},
+		"annotations": []
+	}
+}

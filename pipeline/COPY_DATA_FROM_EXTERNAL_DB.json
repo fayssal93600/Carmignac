@@ -1,0 +1,170 @@
+{
+	"name": "COPY_DATA_FROM_EXTERNAL_DB",
+	"properties": {
+		"activities": [
+			{
+				"name": "Switch",
+				"type": "Switch",
+				"dependsOn": [
+					{
+						"activity": "Set fileName",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set dataSet",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"on": {
+						"value": "@toLower(pipeline().parameters.dataSource)",
+						"type": "Expression"
+					},
+					"cases": [
+						{
+							"value": "factset_rev",
+							"activities": [
+								{
+									"name": "Copy data from factset_rev",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlMISource",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "FACTSET_REV_GENERIC",
+											"type": "DatasetReference",
+											"parameters": {
+												"schemaName": {
+													"value": "@pipeline().parameters.schemaName",
+													"type": "Expression"
+												},
+												"tableName": {
+													"value": "@pipeline().parameters.tableName",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ADLS_INPUT_GENERIC_FILENAME",
+											"type": "DatasetReference",
+											"parameters": {
+												"tableName": {
+													"value": "@variables('dataSet')",
+													"type": "Expression"
+												},
+												"sourceName": {
+													"value": "@pipeline().parameters.dataSource",
+													"type": "Expression"
+												},
+												"fileName": {
+													"value": "@variables('fileName')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Set fileName",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "fileName",
+					"value": {
+						"value": "@concat('in/', utcNow('yyyyMMdd'), '/', utcNow(pipeline().parameters.filenameDatePattern), '_', pipeline().parameters.fileName, '.csv')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set dataSet",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "dataSet",
+					"value": {
+						"value": "@concat(pipeline().parameters.schemaName, '_', pipeline().parameters.tableName)",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"schemaName": {
+				"type": "string"
+			},
+			"tableName": {
+				"type": "string"
+			},
+			"filenameDatePattern": {
+				"type": "string",
+				"defaultValue": "yyyyMMdd_HHmmss"
+			},
+			"fileName": {
+				"type": "string"
+			},
+			"dataSource": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"fileName": {
+				"type": "String"
+			},
+			"dataSet": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "CTRLM"
+		},
+		"annotations": []
+	}
+}

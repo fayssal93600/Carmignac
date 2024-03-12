@@ -1,0 +1,61 @@
+{
+	"name": "SAM_INTEGRATE_DATA_MASTER",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach table",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.tablelist",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "SAM GENERIC",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "SAM_GENERIC_TABLE_TO_ADLS",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"schemaName": {
+										"value": "@split(item(),'.')[0]",
+										"type": "Expression"
+									},
+									"tableName": {
+										"value": "@split(item(),'.')[1]",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"tablelist": {
+				"type": "array",
+				"defaultValue": [
+					"data.Td_Portfolio",
+					"data.Tr_Benchmark_Langue",
+					"data.Td_Langue"
+				]
+			}
+		},
+		"folder": {
+			"name": "SAM"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-05-05T08:03:08Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

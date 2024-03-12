@@ -1,0 +1,71 @@
+{
+	"name": "CLEAN_VENDOME_WENDY_STAGING_RENDER_USING_DATE",
+	"properties": {
+		"activities": [
+			{
+				"name": "BI_DIGIT_CLEAN_STAGING_RENDER_DATA",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@concat(pipeline().parameters.UserNotebookPath,'/Notebooks/05-RENDER/DIGITALISATION_clean_render_staging_data_using_date')",
+						"type": "Expression"
+					},
+					"baseParameters": {
+						"endDate": {
+							"value": "@pipeline().parameters.endDate",
+							"type": "Expression"
+						},
+						"deletevendome": {
+							"value": "@pipeline().parameters.deletevendome",
+							"type": "Expression"
+						},
+						"dateVendome": {
+							"value": "@pipeline().parameters.dateVendome",
+							"type": "Expression"
+						},
+						"startDate": {
+							"value": "@pipeline().parameters.startDate",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_DTBK_EDM_01",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"UserNotebookPath": {
+				"type": "string"
+			},
+			"deletevendome": {
+				"type": "string",
+				"defaultValue": "no"
+			},
+			"dateVendome": {
+				"type": "string",
+				"defaultValue": "none"
+			},
+			"startDate": {
+				"type": "string"
+			},
+			"endDate": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "BI"
+		},
+		"annotations": []
+	}
+}

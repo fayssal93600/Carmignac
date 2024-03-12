@@ -1,0 +1,115 @@
+{
+	"name": "PRODUCT_RATTRAPAGE_BUSINESS",
+	"properties": {
+		"activities": [
+			{
+				"name": "Rattraper les dates",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.dateList",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Execute Distribution",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "PRODUCT_SHARECLASSCOUNTRY_BUSINESS_ENRICHEMENT",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"csvFilePath": {
+										"value": "@concat('/mnt/raw/product/registration/in/',replace(addDays(item(), 1, 'yyyy-MM-dd'),'-','' ),'/','carmignac_SAM_RegistrationChart_',replace(item(),'-','' ),'.csv')",
+										"type": "Expression"
+									},
+									"sourceName": "product",
+									"dataset": "registration",
+									"guid": {
+										"value": "@guid()",
+										"type": "Expression"
+									},
+									"startDate": {
+										"value": "@item()",
+										"type": "Expression"
+									},
+									"endDate": {
+										"value": "@item()",
+										"type": "Expression"
+									},
+									"fileIntegrationCondition": {
+										"value": "@pipeline().parameters.integrateFiles",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Execute Product business",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "Execute Distribution",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "PRODUCT_BUSINESS_ENRICHMENT",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"sourceName": "product",
+									"dataset": "openfund",
+									"xlsFilePath": {
+										"value": "@concat('/mnt/raw/product/openfund/in/',replace(item(),'-','' ),'/','Carmignac_StaticDataOpenfunds_',replace(item(),'-','' ),'.xlsx')",
+										"type": "Expression"
+									},
+									"guid": {
+										"value": "@guid()",
+										"type": "Expression"
+									},
+									"startDate": {
+										"value": "@item()",
+										"type": "Expression"
+									},
+									"endDate": {
+										"value": "@item()",
+										"type": "Expression"
+									},
+									"fileIntegrationCondition": {
+										"value": "@pipeline().parameters.integrateFiles",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"dateList": {
+				"type": "array"
+			},
+			"integrateFiles": {
+				"type": "bool"
+			}
+		},
+		"folder": {
+			"name": "PRODUCT"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,37 @@
+{
+	"name": "VENDOME_TR_SECURITY_ISIN_PERIMETER",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "VENDOME_DYNAMIC_QUERY_ISIN_PERIMETER",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"tableName": "TR_Security_ISIN_perimeter",
+					"schemaName": "usr",
+					"date": "@formatDateTime(utcnow(),'yyyy-MM-dd')"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2023-07-06T07:19:00Z",
+				"timeZone": "UTC",
+				"schedule": {
+					"minutes": [
+						0
+					],
+					"hours": [
+						11
+					]
+				}
+			}
+		}
+	}
+}

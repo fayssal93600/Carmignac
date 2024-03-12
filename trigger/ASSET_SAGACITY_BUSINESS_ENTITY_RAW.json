@@ -1,0 +1,31 @@
+{
+	"name": "ASSET_SAGACITY_BUSINESS_ENTITY_RAW",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "ASSET_SAGACITY_BUSINESS_ENTITY",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"filePath": "@concat(triggerBody().folderPath,'/',triggerBody().fileName)",
+					"dataSource": "assetsagacity",
+					"dataSet": "businessentity",
+					"guid": "\"\""
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/raw/blobs/assetsagacity/businessentity/in/",
+			"blobPathEndsWith": ".json",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/87b720b3-fcb9-4bd5-8047-816efd16c823/resourceGroups/CGP-DEV-RG-EDM/providers/Microsoft.Storage/storageAccounts/cgpdevsaedm01",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

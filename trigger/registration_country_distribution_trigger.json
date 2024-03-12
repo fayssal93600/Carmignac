@@ -1,0 +1,34 @@
+{
+	"name": "registration_country_distribution_trigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PRODUCT_SHARECLASSCOUNTRY_BUSINESS_ENRICHEMENT",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"csvFilePath": "@concat('/mnt/', triggerBody().folderPath,'/',triggerBody().fileName)",
+					"sourceName": "product",
+					"dataset": "registration",
+					"guid": "@guid()",
+					"startDate": "@concat(substring(triggerBody().fileName, add(lastIndexof(triggerBody().fileName, '_') ,1), 4),'-',substring(triggerBody().fileName, add(lastIndexof(triggerBody().fileName, '_') ,5), 2),'-',substring(triggerBody().fileName, add(lastIndexof(triggerBody().fileName, '_') ,7), 2))\n",
+					"endDate": "@concat(substring(triggerBody().fileName, add(lastIndexof(triggerBody().fileName, '_') ,1), 4),'-',substring(triggerBody().fileName, add(lastIndexof(triggerBody().fileName, '_') ,5), 2),'-',substring(triggerBody().fileName, add(lastIndexof(triggerBody().fileName, '_') ,7), 2))\n",
+					"fileIntegrationCondition": true
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/raw/blobs/product/registration/in",
+			"blobPathEndsWith": ".csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/87b720b3-fcb9-4bd5-8047-816efd16c823/resourceGroups/CGP-DEV-RG-EDM/providers/Microsoft.Storage/storageAccounts/cgpdevsaedm01",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

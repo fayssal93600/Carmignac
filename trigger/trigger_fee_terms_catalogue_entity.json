@@ -1,0 +1,33 @@
+{
+	"name": "trigger_fee_terms_catalogue_entity",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PRODUCT_FEE_TERMS_CATALOGUE_ENTITY",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"csvFilePath": "@concat('/mnt/', triggerBody().folderPath,'/',triggerBody().fileName)",
+					"dataset": "feeterm",
+					"guid": "@guid()",
+					"sourceName": "product",
+					"startDate": "@concat(substring(triggerBody().fileName, 11,4),'-',substring(triggerBody().fileName, 15,2),'-',substring(triggerBody().fileName, 17,2))",
+					"endDate": "@concat(substring(triggerBody().fileName, 11,4),'-',substring(triggerBody().fileName, 15,2),'-',substring(triggerBody().fileName, 17,2))"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/raw/blobs/product/feeterm/in",
+			"blobPathEndsWith": ".csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/87b720b3-fcb9-4bd5-8047-816efd16c823/resourceGroups/CGP-DEV-RG-EDM/providers/Microsoft.Storage/storageAccounts/cgpdevsaedm01",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

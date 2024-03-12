@@ -1,0 +1,336 @@
+{
+	"name": "STAGING_INTEGRATION",
+	"properties": {
+		"activities": [
+			{
+				"name": "Convert from xlsx to csv",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "set datePattern",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ADLS_INPUT_GENERIC_XLSX_CONVERT",
+						"type": "DatasetReference",
+						"parameters": {
+							"fileName": {
+								"value": "@variables('fileName')",
+								"type": "Expression"
+							},
+							"sourceName": {
+								"value": "@pipeline().parameters.sourceName",
+								"type": "Expression"
+							},
+							"dataset": {
+								"value": "@pipeline().parameters.dataset",
+								"type": "Expression"
+							},
+							"sheetName": {
+								"value": "@variables('sheetName')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ADLS_INPUT_GENERIC_CSV",
+						"type": "DatasetReference",
+						"parameters": {
+							"fileName": {
+								"value": "@variables('fileName')",
+								"type": "Expression"
+							},
+							"sourceName": {
+								"value": "@pipeline().parameters.sourceName",
+								"type": "Expression"
+							},
+							"dataset": {
+								"value": "@pipeline().parameters.dataset",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Move XLSX file to Archive",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Convert from xlsx to csv",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"deleteFilesAfterCompletion": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "ADLS_INPUT_GENERIC_XLSX",
+						"type": "DatasetReference",
+						"parameters": {
+							"fileName": {
+								"value": "@variables('fileName')",
+								"type": "Expression"
+							},
+							"sourceName": {
+								"value": "@pipeline().parameters.sourceName",
+								"type": "Expression"
+							},
+							"dataset": {
+								"value": "@pipeline().parameters.dataset",
+								"type": "Expression"
+							},
+							"reposType": "in"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ADLS_INPUT_GENERIC_XLSX",
+						"type": "DatasetReference",
+						"parameters": {
+							"fileName": {
+								"value": "@variables('fileName')",
+								"type": "Expression"
+							},
+							"sourceName": {
+								"value": "@pipeline().parameters.sourceName",
+								"type": "Expression"
+							},
+							"dataset": {
+								"value": "@pipeline().parameters.dataset",
+								"type": "Expression"
+							},
+							"reposType": "archive"
+						}
+					}
+				]
+			},
+			{
+				"name": "Execute RAW_TO_DELTA",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Move XLSX file to Archive",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "RAW_TO_DELTA",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"filePath": {
+							"value": "@variables('csvFileName')",
+							"type": "Expression"
+						},
+						"dataSource": {
+							"value": "@pipeline().parameters.sourceName",
+							"type": "Expression"
+						},
+						"dataSet": {
+							"value": "@pipeline().parameters.dataset",
+							"type": "Expression"
+						},
+						"datepattern": "yyyyMMdd",
+						"guid": {
+							"value": "@pipeline().parameters.guid",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "fileName",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "csvFileName",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "fileName",
+					"value": {
+						"value": "@split(replace(variables('csvFileName'),concat('/mnt/raw/',pipeline().parameters.sourceName,'/',pipeline().parameters.dataset,'/in/'),''),'.')[0]",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "csvFileName",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "csvFileName",
+					"value": {
+						"value": "@replace(pipeline().parameters.xlsFilePath,'.xlsx','.csv')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set sheetName value",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "fileName",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "sheetName",
+					"value": {
+						"value": "@if(contains(variables('fileName'),'ESG'),'ESG' ,'Sheet 1' )",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set datePattern",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "set sheetName value",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "datePattern",
+					"value": {
+						"value": "@if(contains(variables('fileName'),'ESG'),'ESG' ,'Sheet 1' )",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"sourceName": {
+				"type": "string",
+				"defaultValue": "product"
+			},
+			"dataset": {
+				"type": "string"
+			},
+			"xlsFilePath": {
+				"type": "string"
+			},
+			"guid": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"date": {
+				"type": "String"
+			},
+			"csvFileName": {
+				"type": "String"
+			},
+			"fileName": {
+				"type": "String"
+			},
+			"sheetName": {
+				"type": "String"
+			},
+			"datePattern": {
+				"type": "String"
+			},
+			"Guid": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "PRODUCT"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-05-05T08:03:09Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

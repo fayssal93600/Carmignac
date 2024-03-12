@@ -1,0 +1,30 @@
+{
+	"name": "ASSET_SAGACITY_PROVIDER_ISINS",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PROVIDER_ISINS",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"sourceName": "assetsagacity",
+					"dataset": "providerisins",
+					"filePath": "@concat(triggerBody().folderPath,'/',triggerBody().fileName)"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/raw/blobs/assetsagacity/providerisins/in",
+			"blobPathEndsWith": ".csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/87b720b3-fcb9-4bd5-8047-816efd16c823/resourceGroups/CGP-DEV-RG-EDM/providers/Microsoft.Storage/storageAccounts/cgpdevsaedm01",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

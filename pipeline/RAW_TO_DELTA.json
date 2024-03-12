@@ -1,0 +1,66 @@
+{
+	"name": "RAW_TO_DELTA",
+	"properties": {
+		"activities": [
+			{
+				"name": "RAW_TO_DELTA",
+				"type": "DatabricksSparkJar",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"mainClassName": "com.carmignac.icare.elysee.ingestion.StagingIntegration",
+					"parameters": [
+						"@pipeline().parameters.filePath",
+						"@pipeline().parameters.dataSource",
+						"@pipeline().parameters.dataSet",
+						"@pipeline().parameters.repo",
+						"@pipeline().parameters.datepattern",
+						"@pipeline().parameters.guid"
+					],
+					"libraries": [
+						{
+							"jar": "dbfs:/databricks/job-jars/IcareDataLib.jar"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_DTBK_1_NODE_12_2_RUNTIME",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"filePath": {
+				"type": "string"
+			},
+			"dataSource": {
+				"type": "string"
+			},
+			"dataSet": {
+				"type": "string"
+			},
+			"repo": {
+				"type": "string",
+				"defaultValue": "in"
+			},
+			"datepattern": {
+				"type": "string",
+				"defaultValue": "yyyyMMdd_HHmmss"
+			},
+			"guid": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "DELTA_process"
+		},
+		"annotations": []
+	}
+}

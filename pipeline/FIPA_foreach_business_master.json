@@ -1,0 +1,70 @@
+{
+	"name": "FIPA_foreach_business_master",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach file",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.FileList",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Execute FIPA Business Master",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "FIPA_business_master",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"fileNamePathwtoraw": {
+										"value": "@item()",
+										"type": "Expression"
+									},
+									"UserNotebookPath": {
+										"value": "@pipeline().parameters.UserNotebookPath",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"FileList": {
+				"type": "array",
+				"defaultValue": [
+					"20220111/20220111_150916_UBSDELTA_contributions_ptf_CEMD_20211231_20220107.json",
+					"20220111/20220111_155335_UBSDELTA_contributions_bench_GBIEMGLBDIVEUR_20211231_20220107.json",
+					"20220111/20220111_190736_UBSDELTA_contributions_bench_JPMGGTR_20211231_20220107.json",
+					"20220111/20220111_190915_UBSDELTA_contributions_ptf_CGB_20211231_20220107.json",
+					"20220113/20220113_163428_UBSDELTA_contributions_ptf_CEMP_20211231_20220107.json",
+					"20220117/20220117_182228_UBSDELTA_contributions_ptf_CSC_20211231_20220107.json",
+					"20220117/20220117_182257_UBSDELTA_contributions_bench_E1AS_20211231_20220107.json",
+					"20220117/20220117_182321_UBSDELTA_contributions_ptf_CSC_20211231_20220114.json",
+					"20220117/20220117_182327_UBSDELTA_contributions_bench_E1AS_20211231_20220114.json",
+					"20220117/20220117_182348_UBSDELTA_contributions_bench_E1AS_20220107_20220114.json",
+					"20220117/20220117_182351_UBSDELTA_contributions_ptf_CSC_20220107_20220114.json"
+				]
+			},
+			"UserNotebookPath": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "FIPA_process"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,30 @@
+{
+	"name": "FACTSET_REV_RAW",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "FACTSET_REV_QUERY_TO_ADLS",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"filePath": "@concat(triggerBody().folderPath,'/',triggerBody().fileName)",
+					"dataSource": "factset_rev",
+					"dataSet": "databricks_bus_seg_report_item_delta"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/raw/blobs/factset_rev/databricks_bus_seg_report_item_delta/in/",
+			"blobPathEndsWith": ".csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/87b720b3-fcb9-4bd5-8047-816efd16c823/resourceGroups/CGP-DEV-RG-EDM/providers/Microsoft.Storage/storageAccounts/cgpdevsaedm01",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

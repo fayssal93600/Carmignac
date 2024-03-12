@@ -1,0 +1,160 @@
+{
+	"name": "FIPA_raw_to_staging_contributions",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get file list",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "Set day",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ADLS_input_raw_withoutfilename_in",
+						"type": "DatasetReference",
+						"parameters": {
+							"tableName": {
+								"value": "@variables('datasetName')",
+								"type": "Expression"
+							},
+							"sourceName": {
+								"value": "@variables('source')",
+								"type": "Expression"
+							},
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems",
+						"itemName"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "Set day",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "day",
+					"value": {
+						"value": "@split(pipeline().parameters.folderPath,'/')[4]",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "If there if file",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Get file list",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@not(equals(length(activity('Get file list').output.childItems),0))",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "raw to valid_copy1",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": {
+									"value": "@concat(pipeline().parameters.UserNotebookPath,'/Notebooks/01-RAW/FIPA_RAW_TO_VALID')",
+									"type": "Expression"
+								},
+								"baseParameters": {
+									"datasetName": {
+										"value": "@variables('datasetName')",
+										"type": "Expression"
+									},
+									"source": {
+										"value": "@variables('source')",
+										"type": "Expression"
+									}
+								},
+								"libraries": [
+									{
+										"jar": "dbfs:/databricks/job-jars/IcareDataLib.jar"
+									}
+								]
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_DTBK_EDM_01_FIPA",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"concurrency": 1,
+		"parameters": {
+			"UserNotebookPath": {
+				"type": "string"
+			},
+			"folderPath": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"datasetName": {
+				"type": "String",
+				"defaultValue": "contributions"
+			},
+			"source": {
+				"type": "String",
+				"defaultValue": "ubsdelta"
+			},
+			"fileName": {
+				"type": "String"
+			},
+			"day": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "FIPA_process"
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,239 @@
+{
+	"name": "VENDOME_GENERIC_TABLE_TO_ADLS",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy VENDOME SQL TO ADLS",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set day",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"maxRowsPerFile": 1000000,
+							"fileNamePrefix": {
+								"value": "@concat(utcNow('yyyyMMdd_HHmmss'),'_',pipeline().parameters.tableName)",
+								"type": "Expression"
+							},
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "VENDOME_Generic",
+						"type": "DatasetReference",
+						"parameters": {
+							"tableName": {
+								"value": "@pipeline().parameters.tableName",
+								"type": "Expression"
+							},
+							"schemaName": {
+								"value": "@pipeline().parameters.schemaName",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ADLS_input_raw_withoutfilename_in",
+						"type": "DatasetReference",
+						"parameters": {
+							"tableName": {
+								"value": "@pipeline().parameters.tableName",
+								"type": "Expression"
+							},
+							"sourceName": {
+								"value": "@variables('sourceName')",
+								"type": "Expression"
+							},
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Set day",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "day",
+					"value": {
+						"value": "@utcNow('yyyyMMdd')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Get filecreated",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "Copy VENDOME SQL TO ADLS",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ADLS_input_raw_withoutfilename_in",
+						"type": "DatasetReference",
+						"parameters": {
+							"tableName": {
+								"value": "@pipeline().parameters.tableName",
+								"type": "Expression"
+							},
+							"sourceName": {
+								"value": "@variables('sourceName')",
+								"type": "Expression"
+							},
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems",
+						"itemName"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "raw 2 delta for each file",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get filecreated",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get filecreated').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Execute RAW_TO_DELTA",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "RAW_TO_DELTA",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"filePath": {
+										"value": "@concat('/mnt/raw/',variables('sourceName'),'/',pipeline().parameters.tableName,'/in/',activity('Get filecreated').output.itemName,'/',item().name)",
+										"type": "Expression"
+									},
+									"dataSource": {
+										"value": "@variables('sourceName')",
+										"type": "Expression"
+									},
+									"dataSet": {
+										"value": "@pipeline().parameters.tableName",
+										"type": "Expression"
+									},
+									"guid": {
+										"value": "@guid()",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"schemaName": {
+				"type": "string"
+			},
+			"tableName": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"sourceName": {
+				"type": "String",
+				"defaultValue": "vendome"
+			},
+			"fileName": {
+				"type": "String"
+			},
+			"day": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "VENDOME"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-05-05T08:03:09Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

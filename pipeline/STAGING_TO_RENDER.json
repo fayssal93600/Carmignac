@@ -1,0 +1,87 @@
+{
+	"name": "STAGING_TO_RENDER",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach table STAGING TO RENDER",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.tableList",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "STAGING_TO_RENDER",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Notebooks/02-STAGING/STAGING_TO_RENDER",
+								"baseParameters": {
+									"tableNameStaging": {
+										"value": "@split(item(),'|')[0]",
+										"type": "Expression"
+									},
+									"tableNameRender": {
+										"value": "@split(item(),'|')[1]",
+										"type": "Expression"
+									},
+									"schemaNameStaging": {
+										"value": "@split(item(),'|')[2]",
+										"type": "Expression"
+									},
+									"schemaNameRender": {
+										"value": "@split(item(),'|')[3]",
+										"type": "Expression"
+									},
+									"stagingCondition": {
+										"value": "@replace(split(item(),'|')[4],'''','\"')",
+										"type": "Expression"
+									},
+									"renderCondition": {
+										"value": "@replace(split(item(),'|')[5],'''','\"')",
+										"type": "Expression"
+									}
+								},
+								"libraries": [
+									{
+										"jar": "dbfs:/databricks/job-jars/IcareDataLib.jar"
+									}
+								]
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_DTBK_EDM_01",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"tableList": {
+				"type": "array",
+				"defaultValue": [
+					"TD_Calendar|Calendar|vendome_staging|ds|true|true",
+					"v_ds_generic_benchmark_constituency_vom|BenchmarkMember|vendome_staging|ds|data.NavDate > current_date()-365|\"NavDate\"> CURRENT_DATE-365",
+					"v_ds_holdings_generic_ELY|Holding|olympia_staging|ds|data.NavDate > current_date()-365|NavDate> CURRENT_DATE-365",
+					"f_ds_shareclassintime|ShareClassInTime|olympia_staging|ds|true|true"
+				]
+			}
+		},
+		"folder": {
+			"name": "STAGING_TO_RENDER"
+		},
+		"annotations": []
+	}
+}
