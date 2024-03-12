@@ -1,0 +1,27 @@
+{
+	"name": "FACTSET_REST_API",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_REST_API_FACTSET",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"endPointUrl": {
+				"type": "string",
+				"defaultValue": "/formula-api/v1/cross-sectional?ids=IBM,AAPL&formulas=P_PRICE(0),PROPER_NAME"
+			}
+		},
+		"folder": {
+			"name": "FACTSET"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().endPointUrl",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}

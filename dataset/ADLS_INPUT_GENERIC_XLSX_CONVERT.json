@@ -1,0 +1,48 @@
+{
+	"name": "ADLS_INPUT_GENERIC_XLSX_CONVERT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_EDM",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"fileName": {
+				"type": "string"
+			},
+			"sourceName": {
+				"type": "string"
+			},
+			"dataset": {
+				"type": "string"
+			},
+			"sheetName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "PRODUCT"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": {
+				"value": "@dataset().sheetName",
+				"type": "Expression"
+			},
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat('in/',dataset().fileName,'.xlsx')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat(dataset().sourceName,'/',dataset().dataset)",
+					"type": "Expression"
+				},
+				"fileSystem": "raw"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	}
+}

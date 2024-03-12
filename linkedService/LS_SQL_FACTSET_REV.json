@@ -1,0 +1,25 @@
+{
+	"name": "LS_SQL_FACTSET_REV",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlMI",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "KV_EDM",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "EDM-DB-FACTSET-REV-CONNECTION-STRING"
+			},
+			"credential": {
+				"referenceName": "CR_EDM_1",
+				"type": "CredentialReference"
+			}
+		},
+		"connectVia": {
+			"referenceName": "SIR-EDM01",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

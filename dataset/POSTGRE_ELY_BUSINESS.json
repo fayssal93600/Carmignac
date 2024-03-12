@@ -1,0 +1,12 @@
+{
+	"name": "POSTGRE_ELY_BUSINESS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_POSTGRE_ELY_BUSINESS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": []
+	}
+}

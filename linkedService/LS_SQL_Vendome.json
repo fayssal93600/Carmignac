@@ -1,0 +1,31 @@
+{
+	"name": "LS_SQL_Vendome",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "KV_EDM",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "EDM-SYN-VOM-CONNECTION-STRING"
+			},
+			"userName": "CARMIGNAC\\SVC_SYN_IR_DEV",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "KV_EDM",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "EDM-SYN-IR-WINDOWS-PASSWORD"
+			}
+		},
+		"connectVia": {
+			"referenceName": "SIR-EDM01",
+			"type": "IntegrationRuntimeReference"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
+}

@@ -1,0 +1,158 @@
+{
+	"name": "SAM_Generic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_SAM",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tableName": {
+				"type": "string"
+			},
+			"schemaName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "SAM"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Id_Ptf",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Cod_Ptf",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Lib_Ptf",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Statut",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "User_Creation",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Dat_Dreaction",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Cod_Ptf_F2c",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LegalStatus",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MinInvest",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "IsDedie",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LocatedCntryId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "StartDate",
+				"type": "date"
+			},
+			{
+				"name": "CloseDate",
+				"type": "date"
+			},
+			{
+				"name": "SubCutOff",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ExpectedValuationDays",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "EsmaClassification",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RanId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AmfClassification",
+				"type": "nvarchar"
+			},
+			{
+				"name": "AIFMCategory",
+				"type": "varchar"
+			},
+			{
+				"name": "SubscriptionFrequency",
+				"type": "varchar"
+			},
+			{
+				"name": "RedemptionFrequency",
+				"type": "varchar"
+			},
+			{
+				"name": "FinancialYearEnd",
+				"type": "varchar"
+			},
+			{
+				"name": "NAVFrequency",
+				"type": "varchar"
+			},
+			{
+				"name": "CodeCNMV",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Min_Duration",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Min_Duration_Unit",
+				"type": "nvarchar"
+			},
+			{
+				"name": "IsLaboratory",
+				"type": "bit"
+			},
+			{
+				"name": "CodUI",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().schemaName",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().tableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

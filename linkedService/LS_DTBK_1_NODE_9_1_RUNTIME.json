@@ -1,0 +1,33 @@
+{
+	"name": "LS_DTBK_1_NODE_9_1_RUNTIME",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://adb-3292469475942856.16.azuredatabricks.net",
+			"authentication": "MSI",
+			"workspaceResourceId": "/subscriptions/87b720b3-fcb9-4bd5-8047-816efd16c823/resourceGroups/CGP-DEV-RG-EDM/providers/Microsoft.Databricks/workspaces/cgpdevdwedm01",
+			"credential": {
+				"referenceName": "CR_EDM_1",
+				"type": "CredentialReference"
+			},
+			"newClusterNodeType": "Standard_DS3_v2",
+			"newClusterNumOfWorker": "1",
+			"newClusterSparkConf": {
+				"spark.driver.extraJavaOptions": "-Djava.security.properties=",
+				"spark.executor.extraJavaOptions": "-Djava.security.properties="
+			},
+			"newClusterSparkEnvVars": {
+				"ENV_TYPE": "dev",
+				"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+			},
+			"newClusterVersion": "9.1.x-scala2.12",
+			"newClusterInitScripts": [],
+			"clusterOption": "Fixed"
+		},
+		"connectVia": {
+			"referenceName": "SIR-EDM01",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

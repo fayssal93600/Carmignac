@@ -1,0 +1,21 @@
+{
+	"name": "LS_SQL_ELYSEE_RENDER",
+	"properties": {
+		"annotations": [],
+		"type": "AzurePostgreSql",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "KV_EDM",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "EDM-ADF-PG-ELY-RENDER-CONNECTION-STRING"
+			}
+		},
+		"connectVia": {
+			"referenceName": "SIR-EDM01",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

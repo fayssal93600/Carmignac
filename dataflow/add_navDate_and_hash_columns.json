@@ -1,0 +1,73 @@
+{
+	"name": "add_navDate_and_hash_columns",
+	"properties": {
+		"folder": {
+			"name": "ISSUER"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_CSV_FILE_AIR",
+						"type": "DatasetReference"
+					},
+					"name": "factsetCrossSectionalCsvInputFile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ADLS_CSV_FILE_AIR",
+						"type": "DatasetReference"
+					},
+					"name": "factsetCrossSectionalCsvOutputFile"
+				}
+			],
+			"transformations": [
+				{
+					"name": "addNavDateAndHashColumns"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     navDate as string,",
+				"     filename as string",
+				"}",
+				"source(output(",
+				"          requestId as string,",
+				"          estimate_priceToEarnings_value as double,",
+				"          estimate_priceToBook_value as double,",
+				"          estimate_epsGrowth_percentage as double,",
+				"          estimate_peg_value as double,",
+				"          reported_dividendYield_percentage as double,",
+				"          reported_netDebtToEbitda_value as double,",
+				"          reported_grossMargin_percentage as double,",
+				"          reported_fcfYield_percentage as double,",
+				"          reported_roe_value as double,",
+				"          estimate_priceToSales_value as double,",
+				"          reported_ev_value as double,",
+				"          estimate_ebitda_value as double,",
+				"          reported_evToEbitda_value as double,",
+				"          lastQuarterReportingDate as string",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: true,",
+				"     ignoreNoFilesFound: false,",
+				"     purgeFiles: true) ~> factsetCrossSectionalCsvInputFile",
+				"factsetCrossSectionalCsvInputFile derive(navDate = $navDate,",
+				"          hashCol = md5(estimate_priceToEarnings_value, estimate_priceToBook_value,estimate_epsGrowth_percentage,estimate_peg_value,reported_dividendYield_percentage,reported_netDebtToEbitda_value,reported_grossMargin_percentage,reported_fcfYield_percentage,reported_roe_value,estimate_priceToSales_value,reported_ev_value,estimate_ebitda_value,reported_evToEbitda_value,lastQuarterReportingDate)) ~> addNavDateAndHashColumns",
+				"addNavDateAndHashColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[($filename)],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     partitionBy('hash', 1)) ~> factsetCrossSectionalCsvOutputFile"
+			]
+		}
+	}
+}

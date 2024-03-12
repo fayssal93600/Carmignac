@@ -1,0 +1,33 @@
+{
+	"name": "OLYMPIA_Generic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_OLY",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tableName": {
+				"type": "string"
+			},
+			"schemaName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "OLYMPIA"
+		},
+		"annotations": [],
+		"type": "AzureSqlMITable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().schemaName",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().tableName",
+				"type": "Expression"
+			}
+		}
+	}
+}

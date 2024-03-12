@@ -1,0 +1,43 @@
+{
+	"name": "ADLS_INPUT_GENERIC_XLSX",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_EDM",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"fileName": {
+				"type": "string"
+			},
+			"sourceName": {
+				"type": "string"
+			},
+			"dataset": {
+				"type": "string"
+			},
+			"reposType": {
+				"type": "string",
+				"defaultValue": "in"
+			}
+		},
+		"folder": {
+			"name": "PRODUCT"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat(dataset().reposType,'/',dataset().fileName,'.xlsx')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat(dataset().sourceName,'/',dataset().dataset)",
+					"type": "Expression"
+				},
+				"fileSystem": "raw"
+			}
+		}
+	}
+}

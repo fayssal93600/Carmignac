@@ -1,0 +1,15 @@
+{
+	"name": "KV_EDM",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://CGP-DEV-KV-EDM01.vault.azure.net/",
+			"credential": {
+				"referenceName": "CR_EDM_1",
+				"type": "CredentialReference"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
+}

@@ -1,0 +1,38 @@
+{
+	"name": "ADLS_archive_raw",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_EDM",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tableName": {
+				"type": "string"
+			},
+			"sourceName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "ADLS/FIPA"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@concat(dataset().sourceName,'/',dataset().tableName)",
+					"type": "Expression"
+				},
+				"fileSystem": "archive"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

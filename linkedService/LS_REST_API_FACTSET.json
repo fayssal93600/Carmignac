@@ -1,0 +1,26 @@
+{
+	"name": "LS_REST_API_FACTSET",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://api.factset.com",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Basic",
+			"userName": "CARMIGNAC_FR-1558951",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "KV_EDM",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "EDM-API-REST-FACTSET-TOKEN"
+			}
+		},
+		"connectVia": {
+			"referenceName": "SIR-EDM01",
+			"type": "IntegrationRuntimeReference"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
+}

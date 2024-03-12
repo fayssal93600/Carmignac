@@ -1,0 +1,19 @@
+{
+	"name": "LS_ADLS_EDM",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://cgpdevsaedm01.dfs.core.windows.net",
+			"credential": {
+				"referenceName": "CR_EDM_1",
+				"type": "CredentialReference"
+			}
+		},
+		"connectVia": {
+			"referenceName": "SIR-EDM01",
+			"type": "IntegrationRuntimeReference"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
+}

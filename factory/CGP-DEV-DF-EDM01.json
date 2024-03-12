@@ -1,0 +1,26 @@
+{
+	"name": "CGP-DEV-DF-EDM01",
+	"properties": {
+		"encryption": {
+			"keyName": "EDM-DATAFACTORY-KEY",
+			"vaultBaseUrl": "https://cgp-dev-kv-edm01.vault.azure.net/",
+			"keyVersion": "432edaa0d38647c0a55fa215e506d4b8",
+			"identity": {
+				"userAssignedIdentity": "/subscriptions/87b720b3-fcb9-4bd5-8047-816efd16c823/resourceGroups/CGP-DEV-RG-INF01/providers/Microsoft.ManagedIdentity/userAssignedIdentities/CGP-DEV-MI-EDM01"
+			}
+		},
+		"globalConfigurations": {
+			"PipelineBillingEnabled": "true"
+		}
+	},
+	"location": "francecentral",
+	"identity": {
+		"type": "UserAssigned",
+		"userAssignedIdentities": {
+			"/subscriptions/87b720b3-fcb9-4bd5-8047-816efd16c823/resourcegroups/CGP-DEV-RG-INF01/providers/Microsoft.ManagedIdentity/userAssignedIdentities/CGP-DEV-MI-EDM01": {
+				"clientId": "c16e4806-d697-4515-a060-5781d50ac19b",
+				"principalId": "26d493b4-6f5d-46ea-a941-1422bf303455"
+			}
+		}
+	}
+}
