@@ -1,0 +1,9 @@
+{
+	"name": "fayssaltest",
+	"location": "francecentral",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ac7a1058-df81-4120-b5b4-ea5ecbdb3a81",
+		"tenantId": "b8b45bcc-3f4a-4267-8090-f113b0fee0e2"
+	}
+}
